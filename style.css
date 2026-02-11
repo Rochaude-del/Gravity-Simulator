@@ -1,0 +1,89 @@
+body {
+  margin: 0;
+  overflow: hidden;
+}
+
+#gravity-simulator {
+  position: relative;
+}
+
+.myCanvas {
+  image-rendering: pixelated;
+  position: absolute;
+  border: solid black;
+  z-index: 1;
+}
+
+
+
+label {
+
+  display: flex;
+  justify-content: end;
+  padding: 2px;
+
+}
+
+input {
+
+  margin-left: 10px;
+  flex: none;
+  opacity: 1;
+}
+
+input[type="number"] {
+  width: 70px;
+}
+
+.box {
+  height: 200px;
+  width: 300px;
+  padding: 10px;
+  border: 1px solid black;
+}
+
+.taskbar {
+  opacity: 1;
+
+  display: flex;
+  width: max-content;
+  flex-direction: row;
+  position: absolute;
+  z-index: 2;
+}
+
+.stretch-btn {
+  display: block;
+  /* Changes the button to a block-level element */
+  width: 100%;
+  /* Stretches the button to the full width of its parent */
+
+  /* Adds space inside the button for better usability */
+  /* Add other styling as needed (border, background-color, font, etc.) */
+  cursor: pointer;
+  text-align: center;
+}
+
+.input-group {
+  display: flex;
+  flex-direction: row;
+  justify-content: end;
+}
+
+.dropdown-panel {
+  position: absolute;
+  width: fit-content;
+  display: flex;
+
+  flex-direction: column;
+
+}
+
+.create-parameters {
+  justify-content: end;
+  background-color: white;
+}
+
+button {
+  white-space: nowrap;
+}
