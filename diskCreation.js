@@ -161,6 +161,16 @@ function getDiskChecks() { //will need to change ordering to match desired visua
 
 }
 
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+
+        settings.createDiskVisually = false;
+        step = lowestStep;
+        substep = 0;
+    }
+});
+
+
 const createInOrbitDisk = document.createElement("button");
 createDiskMenu.panel.appendChild(createInOrbitDisk);
 createInOrbitDisk.textContent = "create in orbit";
@@ -380,11 +390,12 @@ interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing pla
             interactiveCanvas.enableMove = true;
         }
 
-        if (shiftPressed) settings.createDiskVisually = false;
 
 
     }
 });
+
+
 
 
 function animateDiskPlacement(canvas) {

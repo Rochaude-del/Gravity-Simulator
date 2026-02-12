@@ -203,6 +203,7 @@ clearButton.addEventListener("click", () => {
 let ctrlPressed = false;
 document.addEventListener("keydown", (e) => {
     if (e.ctrlKey) {
+        e.preventDefault();
         ctrlPressed = true;
     }
 });
@@ -215,6 +216,7 @@ document.addEventListener("keyup", (e) => {
 let shiftPressed = false;
 document.addEventListener("keydown", (e) => {
     if (e.shiftKey) {
+        e.preventDefault();
         shiftPressed = true;
     }
 });
@@ -234,9 +236,10 @@ document.addEventListener("keyup", (e) => {
     if (e.key === "Alt") {
         e.preventDefault();
         altPressed = false;
-        
+
     }
 });
+
 
 
 function addSettingsButton(menu, textContent, setting) {

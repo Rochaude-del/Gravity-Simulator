@@ -165,6 +165,15 @@ for (const input of numInputs) {
     });
 }
 
+document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+
+        settings.createPlanetVisually = false;
+        step = lowestStep;
+    }
+});
+
+
 const createInOrbitPlanet = document.createElement("button");
 createPlanetMenu.panel.appendChild(createInOrbitPlanet);
 createInOrbitPlanet.textContent = "create in orbit";
@@ -343,11 +352,12 @@ interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing pla
             interactiveCanvas.enableZoom = true;
             interactiveCanvas.enableMove = true;
         }
-        if(shiftPressed) settings.createPlanetVisually = false;
+
 
 
     }
 });
+
 
 function animatePlanetPlacement(canvas) {
     const xShift = (settings.lockedon) ? lockonPoint.x : canvas.xOfWindowToCanvas(canvas.width / 2);
@@ -378,7 +388,7 @@ function animatePlanetPlacement(canvas) {
                 const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
                 const xVel = (altPressed) ? velArray[0] : -velArray[0];
                 const yVel = (altPressed) ? velArray[1] : -velArray[1];
-                canvas.drawLine(x ,y, x + xVel, y + yVel, "red");
+                canvas.drawLine(x, y, x + xVel, y + yVel, "red");
             }
         }
     }
