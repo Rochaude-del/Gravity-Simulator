@@ -1,9 +1,10 @@
 import { data, interactiveCanvas } from "./declarations.js";
 import { settings } from "./settings.js";
-import { createPlanetMenu, ctrlPressed } from "./UI.js";
+import { createPlanetMenu, ctrlPressed, altPressed, shiftPressed } from "./UI.js";
 import { swap } from "./diskCreation.js";
 import { Quadtree } from "./Quadtree.js";
 import { lockonPoint } from "./lockon.js";
+import { centripitalVel } from "./generators.js";
 
 let lowestStep = 0;
 let step = 0;
@@ -73,6 +74,10 @@ function getPlanetValues() {
         planetToAddReturn[i] = value;
         i++
     }
+    if (settings.createInOrbitPlanet) {
+        planetToAddReturn[2] = 0;
+        planetToAddReturn[3] = 0;
+    }
     return planetToAddReturn;
 
 }
@@ -84,6 +89,11 @@ function getPlanetValuesWithNAN() {
         const value = child.valueAsNumber;
         planetToAdd[i] = value;
         i++
+    }
+    if (settings.createInOrbitPlanet) {
+        const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+        planetToAdd[2] = velArray[0];
+        planetToAdd[3] = velArray[1];
     }
     return planetToAdd;
 }
@@ -121,6 +131,9 @@ createPlanetVisually.addEventListener("click", () => {
     settings.createPlanetVisually = !settings.createPlanetVisually;
     settings.createDiskVisually = false;
     checksArrayPlanet = getPlanetChecks();
+    if (settings.createInOrbitPlanet) {
+        checksArrayPlanet[2] = 1;
+    }
 
 });
 
@@ -136,6 +149,9 @@ function getPlanetChecks() { //will need to change ordering to match desired vis
         }
     }
     swap(array, 1, 2);
+    if (settings.createInOrbitPlanet) {
+        array[2] = 1;
+    }
     console.log(array);
     return array;
 
@@ -149,6 +165,29 @@ for (const input of numInputs) {
     });
 }
 
+const createInOrbitPlanet = document.createElement("button");
+createPlanetMenu.panel.appendChild(createInOrbitPlanet);
+createInOrbitPlanet.textContent = "create in orbit";
+createInOrbitPlanet.addEventListener("click", () => {
+    if (settings.lockedon) {
+        if (!settings.createInOrbitPlanet) {
+            settings.createInOrbitPlanet = !settings.createInOrbitPlanet;
+            checksArrayPlanet[2] = 1;
+            lowestStep = findFirstCheck();
+            step = lowestStep;
+            planetToAdd = getPlanetValuesWithNAN();
+        }
+        else {
+            settings.createInOrbitPlanet = !settings.createInOrbitPlanet;
+            checksArrayPlanet = getPlanetChecks();
+            lowestStep = findFirstCheck();
+            step = lowestStep;
+            planetToAdd = getPlanetValuesWithNAN();
+        }
+
+    }
+});
+
 let planetToAdd = Array(11).fill(0);
 let substep = 0;
 interactiveCanvas.addEventListener("click", (e) => {
@@ -158,13 +197,23 @@ interactiveCanvas.addEventListener("click", (e) => {
             if (isNaNInputsNeeded()) {
                 return;
             }
+            if (settings.createInOrbitPlanet) { //unneccessary?
+                const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+                planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
+                planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+            }
         }
 
 
         if (checksArrayPlanet[0]) {
             if (isNaN(planetToAdd[1]) || isNaN(planetToAdd[2])) { return };
             placementX = interactiveCanvas.width / 2 + planetToAdd[0] * interactiveCanvas.scale;
-            placementY = interactiveCanvas.height / 2 + planetToAdd[1] * interactiveCanvas.scale;;
+            placementY = interactiveCanvas.height / 2 + planetToAdd[1] * interactiveCanvas.scale;
+            if (settings.createInOrbitPlanet) {
+                const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+                planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
+                planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+            }
         }
 
         if (step === 0) {
@@ -180,6 +229,11 @@ interactiveCanvas.addEventListener("click", (e) => {
                 planetToAdd[1] = (placementY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
                 interactiveCanvas.enableMove = false;
                 interactiveCanvas.enableZoom = false;
+                if (settings.createInOrbitPlanet) {
+                    const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+                    planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
+                    planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+                }
             }
         }
 
@@ -242,6 +296,9 @@ function arrayConvert() {
 function isNaNInputsNeeded() {
     const planetValues = getPlanetValuesWithNAN();
     const UseInputArray = arrayConvert();
+    if (settings.createInOrbitPlanet) {
+        UseInputArray[2] = UseInputArray[3] = 0;
+    }
     for (let i = 0; i < UseInputArray.length; i++) {
         if (UseInputArray[i]) {
             const inputValue = planetValues[i];
@@ -260,6 +317,7 @@ function createVisually() {   //same as normal create?
     const yShift = (settings.lockedon) ? lockonPoint.y : interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.height / 2);
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
+
     let planet = {
         x: planetToAdd[0] + xShift,
         y: planetToAdd[1] + yShift,
@@ -285,6 +343,7 @@ interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing pla
             interactiveCanvas.enableZoom = true;
             interactiveCanvas.enableMove = true;
         }
+        if(shiftPressed) settings.createPlanetVisually = false;
 
 
     }
@@ -306,13 +365,22 @@ function animatePlanetPlacement(canvas) {
     const x = planetToAdd[0] + xShift;
     const y = planetToAdd[1] + yShift;
     const size = Quadtree.cubeRootMass(planetToAdd[4]);
-    const xVel = planetToAdd[2] + xVelShift;
-    const yVel = planetToAdd[3] + yVelShift;
+
+    const xVel = planetToAdd[2];
+    const yVel = planetToAdd[3];
 
     if (checksArrayPlanet[0] || step > 0) {
         canvas.ctx.globalAlpha = 0.5;
         canvas.drawCircle(x, y, 1, color);
         canvas.ctx.globalAlpha = 1;
+        if (step != 0) {
+            if (settings.createInOrbitPlanet) {
+                const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+                const xVel = (altPressed) ? velArray[0] : -velArray[0];
+                const yVel = (altPressed) ? velArray[1] : -velArray[1];
+                canvas.drawLine(x ,y, x + xVel, y + yVel, "red");
+            }
+        }
     }
     if (checksArrayPlanet[1] || step > 1) {
         canvas.ctx.globalAlpha = 0.5;
@@ -322,13 +390,31 @@ function animatePlanetPlacement(canvas) {
     }
     if (checksArrayPlanet[2] || step > 2) {
         canvas.ctx.globalAlpha = 0.5;
-        if (step === 0) canvas.drawLine(ctxX, ctxY, ctxX + xVel, ctxY + yVel, "red");
+        if (settings.createInOrbitPlanet) {
+            if (step === 0) {
+                const xDist = (mouseX - interactiveCanvas.width / 2) / interactiveCanvas.scale;
+                const yDist = (mouseY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
+                const velArray = centripitalVel(xDist, yDist, lockonPoint.mass);
+                const xVel = (altPressed) ? velArray[0] : -velArray[0];
+                const yVel = (altPressed) ? velArray[1] : -velArray[1];
+                canvas.drawLine(ctxX, ctxY, ctxX + xVel, ctxY + yVel, "red");
+            }
+            else {
+                if (!checksArrayPlanet[0]) canvas.drawLine(x, y, x + xVel, y + yVel, "red");
+            }
+
+        }
+        else if (step === 0) {
+
+            canvas.drawLine(ctxX, ctxY, ctxX + xVel, ctxY + yVel, "red");
+        }
         else canvas.drawLine(x, y, x + xVel, y + yVel, "red");
         canvas.ctx.globalAlpha = 1;
     }
 
     if (step === 0) {
         canvas.drawCircle(ctxX, ctxY, 1 / scale, color);
+
     }
     else if (step === 1) {
         let radius = Math.sqrt((mouseX - placementX) ** 2 + (mouseY - placementY) ** 2);

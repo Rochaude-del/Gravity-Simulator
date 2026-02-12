@@ -6,9 +6,11 @@ const interactiveCanvas = new InteractiveCanvas();
 
 const pathCanvas = new InteractiveCanvas();
 const backGround = new InteractiveCanvas();
+const zeroMassCanvas = new InteractiveCanvas();
 
 interactiveCanvas.helperCanvases.push(pathCanvas);
 interactiveCanvas.helperCanvases.push(backGround);
+interactiveCanvas.helperCanvases.push(zeroMassCanvas);
 
 let data = [];
 function filterData() {
@@ -34,4 +36,4 @@ function emptyPlanet() {
     };
 }
 
-export { interactiveCanvas, pathCanvas, backGround, data, quadtree2, filterData, emptyPlanet};
+export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet};

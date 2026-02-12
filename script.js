@@ -1,5 +1,5 @@
 
-import { interactiveCanvas, data, quadtree2, filterData ,pathCanvas,backGround} from "./declarations.js";
+import { interactiveCanvas, data, quadtree2, filterData, pathCanvas, backGround, zeroMassCanvas } from "./declarations.js";
 import { Quadtree } from "./Quadtree.js";
 import { FunctionCanvas } from "./functionCanvas.js";
 import { settings } from "./settings.js";
@@ -7,6 +7,7 @@ import { taskbar } from "./UI.js";
 import { animateDiskPlacement } from "./diskCreation.js";
 import { animatePlanetPlacement } from "./planetCreation.js";
 import { changeLockon, lockonPoint } from "./lockon.js";
+import { physicsSettings } from "./physicsSettings.js";
 
 let color = settings.color;
 
@@ -143,6 +144,8 @@ function collisions4(points, quad) {
         if (!point.delete) {
             let array = quad.findColliders3(point);
             if (array.length > 0) {
+
+                collisionOccurence = true;
 
                 let pointToKeep = findLargestMassPoint(array);
                 if (Math.abs(point.mass) > Math.abs(pointToKeep.mass)) {
@@ -284,6 +287,13 @@ export { staticBackground };
 
 
 
+function setPixel(data, width, x, y, r, g, b, a) {
+    const index = (y * width + x) * 4; // 4 bytes per pixel
+    data[index] = r;     // Red channel
+    data[index + 1] = g; // Green channel
+    data[index + 2] = b; // Blue channel
+    data[index + 3] = a; // Alpha channel (0 = transparent, 255 = opaque)
+}
 
 function draw() {
     for (const point of data) {
@@ -303,7 +313,19 @@ function draw() {
 }
 
 
+
+const imageData = zeroMassCanvas.ctx.getImageData(0, 0, interactiveCanvas.width, interactiveCanvas.height);
+const dataI = imageData.data;
+const xInterval = interactiveCanvas.width;
+const yInterval = interactiveCanvas.height;
+let collisionOccurence = false;
+let zeroMassExists = false;
+
 function finalDraw() {
+
+    collisionOccurence = false;
+    zeroMassExists = false;
+
 
     if (data.length) findBoundingBox(data);
 
@@ -313,9 +335,12 @@ function finalDraw() {
         if (point.mass != 0) {
             quadtree2.addPoint2(point);
         }
+        else {
+            zeroMassExists = true;
+        }
     }
 
-    collisions4(data, quadtree2); //quadtree3 needs collisions3 or 4
+    if(settings.collisions) collisions4(data, quadtree2); //quadtree3 needs collisions3 or 4
 
     //quadtree2.pruneChildren(); //only needed by original quadtree 
 
@@ -351,12 +376,46 @@ function finalDraw() {
     interactiveCanvas.ctx.drawImage(staticBackground, interactiveCanvas.xOfWindowToCanvas(0), interactiveCanvas.yOfWindowToCanvas(0), interactiveCanvas.width / interactiveCanvas.scale, interactiveCanvas.height / interactiveCanvas.scale);
     if (settings.paths) interactiveCanvas.ctx.drawImage(pathCanvas, interactiveCanvas.xOfWindowToCanvas(0), interactiveCanvas.yOfWindowToCanvas(0), interactiveCanvas.width / interactiveCanvas.scale, interactiveCanvas.height / interactiveCanvas.scale);
 
+
+
+
+    if (zeroMassExists) {
+        for (const point of data) {
+
+            if (point.mass === 0) {
+                const x = Math.trunc(interactiveCanvas.xOfCanvasToWindow(point.x));
+                const y = Math.trunc(interactiveCanvas.yOfCanvasToWindow(point.y));
+                if ((x > 0 && x < xInterval) && (y > 0 && y < yInterval)) {
+                    setPixel(dataI, xInterval, x, y, 255, 255, 255, 255);
+                }
+            }
+        }
+
+        zeroMassCanvas.ctx.putImageData(imageData, 0, 0);
+        interactiveCanvas.ctx.drawImage(zeroMassCanvas, interactiveCanvas.xOfWindowToCanvas(0), interactiveCanvas.yOfWindowToCanvas(0), interactiveCanvas.width / interactiveCanvas.scale, interactiveCanvas.height / interactiveCanvas.scale);
+        for (const point of data) {
+            if (point.mass === 0) {
+                const x = Math.trunc(interactiveCanvas.xOfCanvasToWindow(point.x));
+                const y = Math.trunc(interactiveCanvas.yOfCanvasToWindow(point.y));
+                if ((x > 0 && x < xInterval) && (y > 0 && y < yInterval)) {
+                    setPixel(dataI, xInterval, x, y, 0, 0, 0, 0);
+                }
+            }
+        }
+    }
+
+
     for (const point of data) {
-        if (!point.delete) {
+
+        if (!point.delete && point.mass != 0) {
             let color = (point.mass < 0) ? "magenta" : settings.color;
             const size = (point.mass === 0) ? 1 : point.size;
             interactiveCanvas.drawCircle(point.x, point.y, size, color);
 
+        }
+        else if (point.mass === 0) {
+            //interactiveCanvas.ctx.fillStyle = settings.color;
+            //interactiveCanvas.ctx.fillRect(point.x, point.y,1,1);
         }
 
         else {
@@ -367,15 +426,17 @@ function finalDraw() {
 
     }
 
+
+
     if (settings.lockedon) {
         const x = lockonPoint.x;
         const y = lockonPoint.y;
         const color = (lockonPoint.mass < 0) ? "BlueViolet" : "DeepSkyBlue";
         interactiveCanvas.drawCircle(x, y, lockonPoint.size, color);
         interactiveCanvas.centerOnPoint(x, y);
-        
+
     }
-    
+
     if (settings.drawQuadtree) drawQuadtree(quadtree2, "green");
 
     for (const point of data) {
@@ -385,7 +446,7 @@ function finalDraw() {
 
     }
 
-    filterData();
+    if (collisionOccurence) filterData();
 
     leapfrogIntergrate(data);
 

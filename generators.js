@@ -146,6 +146,15 @@ function generateRandomAssortment(xPos, yPos, radius, minMass, maxMass, minVel, 
 
 }
 
+function centripitalVel( x, y, mass) {
+
+    const radius = Math.sqrt(x ** 2 + y ** 2);
+    const vel = Math.sqrt(Quadtree.G * (Math.abs(mass)) / radius);
+    const xVel = vel * -y / radius;
+    const yVel = vel * x / radius;
+    return [xVel,yVel];
+}
+
 let disk = generateDisk(300000, 0, 0, 20, 2000, 1, 1, 5000);
 
-export { generateDisk, generateDiskWithVel, generateRandomAssortment, disk };
+export { generateDisk, generateDiskWithVel, generateRandomAssortment, disk, centripitalVel };

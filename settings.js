@@ -6,7 +6,10 @@ const settings = {
     createPlanetVisually: false,
     createDiskVisually: false,
     drawQuadtree: false,
-    lockedon: false
+    lockedon: false,
+    collisions: true,
+    createInOrbitPlanet: false,
+    createInOrbitDisk: false
 }
 
 

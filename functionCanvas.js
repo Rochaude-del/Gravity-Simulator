@@ -14,7 +14,7 @@ class FunctionCanvas extends HTMLCanvasElement {
     }
 
     drawCircleOutline(x, y, size, color) {
-        this.ctx.lineWidth = 5;
+        this.ctx.lineWidth = 1;
         this.ctx.strokeStyle = color;
         this.ctx.beginPath();
         this.ctx.arc(x, y, size, 0, 2 * Math.PI, true);

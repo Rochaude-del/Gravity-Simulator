@@ -194,6 +194,8 @@ creationSettings.panel.appendChild(clearButton);
 clearButton.addEventListener("click", () => {
     data.length = 0;
     settings.lockedon = false;
+    settings.createInOrbitPlanet = false;
+    settings.createInOrbitDisk = false;
     interactiveCanvas.enableMove = true;
     interactiveCanvas.enableZoom = true;
 });
@@ -222,6 +224,21 @@ document.addEventListener("keyup", (e) => {
     }
 });
 
+let altPressed = false;
+document.addEventListener("keydown", (e) => {
+    if (e.altKey) {
+        altPressed = true;
+    }
+});
+document.addEventListener("keyup", (e) => {
+    if (e.key === "Alt") {
+        e.preventDefault();
+        altPressed = false;
+        
+    }
+});
+
+
 function addSettingsButton(menu, textContent, setting) {
     const button = document.createElement("button");
     button.textContent = textContent;
@@ -236,5 +253,5 @@ function addSettingsButton(menu, textContent, setting) {
 
 addSettingsButton(displaySettings, "display quadtree", "drawQuadtree");
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed };
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed };
 
