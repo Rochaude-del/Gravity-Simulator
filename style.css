@@ -14,11 +14,7 @@ body {
   z-index: 1;
 }
 
-
-
 label {
-
-
   display: flex;
   flex-direction: row;
   justify-content: end;
@@ -29,23 +25,17 @@ label {
   margin-left: 10px;
 }
 
-
-
 input {
-
   margin-left: 10px;
   flex: none;
   opacity: 1;
   align-content: end;
 }
 
-
 input[type="number"] {
   width: 70px;
   height: fit-content;
 }
-
-
 
 .taskbar {
   opacity: 1;
@@ -62,28 +52,19 @@ input[type="number"] {
   bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
-
 }
 
 #animation-controls input {
   width: 40px;
-
 }
 
 #animation-controls .play-pause-button {
   height: 35px;
 }
 
-
-
 .stretch-btn {
   display: block;
-  /* Changes the button to a block-level element */
   width: 100%;
-  /* Stretches the button to the full width of its parent */
-
-  /* Adds space inside the button for better usability */
-  /* Add other styling as needed (border, background-color, font, etc.) */
   cursor: pointer;
   text-align: center;
 }
@@ -116,20 +97,15 @@ input[type="number"] {
   display: flex;
   border: 1px solid rgb(59, 59, 59);
   background-color: rgba(255, 255, 255, 0.7);
-
   flex-direction: column;
-
 }
 
 .toggle-button {
   background-color: rgb(167, 167, 167);
 }
 
-
 .create-parameters {
   justify-content: end;
-
-
 }
 
 .expand-icon {
@@ -150,7 +126,6 @@ button {
   justify-content: space-evenly;
   align-items: center;
   border: 1px solid black;
-
 }
 
 .expand-menu-button {
@@ -161,4 +136,3 @@ button {
 .play-pause-icon {
   height: 100%;
 }
-
