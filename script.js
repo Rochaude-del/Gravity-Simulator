@@ -78,56 +78,6 @@ function drawQuadPoints(quad) {
 
 }
 
-function collisions3(points, quad) {  //works with 0 masses because bounding box includes them, probably.
-    for (const point of points) {
-        if (!point.delete) {
-            let array = quad.findColliders3(point);
-            if (array.length > 0) {
-
-                quad.deletePoint(point);
-
-                let newMass = point.mass;
-                let newX = point.x * newMass;
-                let newY = point.y * newMass;
-                let newVX = point.xVel * newMass;
-                let newVY = point.yVel * newMass;
-
-
-                for (const i of array) {
-                    newMass += i.mass;
-                    newX += i.mass * i.x;
-                    newY += i.mass * i.y;
-                    newVX += i.mass * i.xVel;
-                    newVY += i.mass * i.yVel;
-                    quad.deletePoint(i);
-                }
-                newX /= newMass;
-                newY /= newMass;
-                newVX /= newMass;
-                newVY /= newMass;
-
-                point.x = newX;
-                point.y = newY;
-                point.xVel = newVX;
-                point.yVel = newVY;
-                point.mass = newMass;
-                point.size = Math.cbrt(point.mass) * s;
-
-                quad.addPoint(point);
-
-            }
-        }
-
-    }
-    //for(const point of points){
-    //    if(point.delete){
-    //       quad.deletePoint(point);
-    //   }
-    //}
-
-
-
-}
 
 function findLargestMassPoint(points) {
     let largestMass = 0;
@@ -213,27 +163,35 @@ function collisions4(points, quad) {
 
 let xMin, xMax, yMin, yMax, length;
 
+let distanceLimit = 100000;
+
 function findBoundingBox(points) {
-    xMin = points[0].x;
-    xMax = points[0].x;
-    yMin = points[0].y;
-    yMax = points[0].y;
+    xMin = 0;
+    xMax = 0;
+    yMin = 0;
+    yMax = 0;
     for (const point of points) {
-        if (point.x > xMax) {
-            xMax = point.x;
-
+        if (Math.abs(point.x - windowCenterToCanvasX) > distanceLimit || Math.abs(point.y - windowCenterToCanvasY) > distanceLimit) {
+            point.delete = true;
+            exceedsBounds = true;
         }
-        else if (point.x < xMin) {
-            xMin = point.x;
+        else {
+            if (point.x > xMax) {
+                xMax = point.x;
 
-        }
-        if (point.y > yMax) {
-            yMax = point.y;
+            }
+            else if (point.x < xMin) {
+                xMin = point.x;
 
-        }
-        else if (point.y < yMin) {
-            yMin = point.y;
+            }
+            if (point.y > yMax) {
+                yMax = point.y;
 
+            }
+            else if (point.y < yMin) {
+                yMin = point.y;
+
+            }
         }
     }
     xMin -= 3;
@@ -323,13 +281,18 @@ const xInterval = interactiveCanvas.width;
 const yInterval = interactiveCanvas.height;
 let collisionOccurence = false;
 let zeroMassExists = false;
+let exceedsBounds = false;
 const deltaT = 0.01;
+let windowCenterToCanvasX, windowCenterToCanvasY;
 
 function finalDraw() {
 
+    windowCenterToCanvasX = interactiveCanvas.xOfWindowToCanvas(interactiveCanvas.width / 2);
+    windowCenterToCanvasY = interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.height / 2);
 
     collisionOccurence = false;
     zeroMassExists = false;
+    exceedsBounds = false;
 
     if (!settings.paused) {
 
@@ -340,7 +303,7 @@ function finalDraw() {
     }
 
     for (const point of data) {
-       
+
         if (!point.delete) {
             if (point.mass != 0) {
                 if (!settings.paused) quadtree2.addPoint2(point);
@@ -355,14 +318,12 @@ function finalDraw() {
     if (!settings.paused) {
         if (settings.collisions) collisions4(data, quadtree2); //quadtree3 needs collisions3 or 4
 
+        if (collisionOccurence || exceedsBounds) filterData();
+
         quadtree2.calculateCentersOfMasses(); //not needed by quadtree3 if using original addpoint
     }
 
-    //drawCenterOfMasses(quadtree2);
 
-    //drawQuadPoints(quadtree2);
-
-    //backGround.clear(); //interactable background
 
     if (settings.paths) {
         pathCanvas.clearFade(0.01);
@@ -374,11 +335,6 @@ function finalDraw() {
                 pathCanvas.ctx.fillStyle = color;
                 pathCanvas.ctx.fillRect(point.x - rectSize / 2, point.y - rectSize / 2, rectSize, rectSize);
 
-            }
-
-            else {
-                //let color = "rgb(255 0 255 / 100%)"
-                //interactiveCanvas.drawCircle(point.x, point.y, point.size, color);
             }
 
 
@@ -425,15 +381,6 @@ function finalDraw() {
             interactiveCanvas.drawCircle(point.x, point.y, size, color);
 
         }
-        else if (point.mass === 0) {
-            //interactiveCanvas.ctx.fillStyle = settings.color;
-            //interactiveCanvas.ctx.fillRect(point.x, point.y,1,1);
-        }
-
-        else {
-            //let color = "rgb(255 0 255 / 100%)"
-            //interactiveCanvas.drawCircle(point.x, point.y, point.size, color);
-        }
 
 
     }
@@ -458,8 +405,6 @@ function finalDraw() {
             }
 
         }
-
-        if (collisionOccurence) filterData();
 
         leapfrogIntergrate(data);
     }
