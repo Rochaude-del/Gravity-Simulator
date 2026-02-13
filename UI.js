@@ -35,6 +35,7 @@ function createNumberInput(name, id) {
     input.setAttribute("type", "number");
     input.setAttribute("id", id);
     label.appendChild(input);
+    label.classList.add("number-input-label");
     return label;
 
 }
@@ -57,10 +58,13 @@ const values2 = ["500", "0", "0", "0", "0", "50", "400", "5", "20", "30"];
 const ids2 = ["center-mass", "x-pos", "y-pos", "x-vel", "y-vel", "min-radius", "max-radius", "min-mass", "max-mass", "number", "spin"];
 const checkIdsDisk = ["center-mass", "pos-check", "vel-check", "min-radius", "max-radius"];
 
+
+
 createPlanetMenu.button.textContent = "planet creation";
 createDiskMenu.button.textContent = "disk creation";
 
-
+createPlanetMenu.button.prepend(icon.cloneNode(true)); //for some reason the icon does not show up if I append it before setting the textContent, so I have to do it after
+createDiskMenu.button.prepend(icon.cloneNode(true));
 
 for (let i = 0; i < 2; i++) {
     const div = document.createElement("div");
@@ -96,6 +100,10 @@ massCheckbox.setAttribute("id", "mass");
 massCheckbox.classList.add("planet-checkbox");
 massInput.appendChild(massCheckbox);
 createPlanetMenu.panel.appendChild(massInput);
+
+
+
+
 
 let i = 0;
 while (i <= names2.length) {
@@ -188,8 +196,7 @@ creationSettings.button.textContent = "creation menu";
 creationSettings.panel.appendChild(createPlanetMenu);
 creationSettings.panel.appendChild(createDiskMenu);
 
-createPlanetMenu.button.prepend(icon.cloneNode(true));
-createDiskMenu.button.prepend(icon.cloneNode(true));
+
 
 
 
@@ -297,10 +304,15 @@ animationControls.classList.add("taskbar");
 animationControls.setAttribute("id", "animation-controls");
 const pauseButton = document.createElement("button");
 
-pauseButton.textContent = "pause";
+const pauseIcon = document.createElement("img");
+pauseIcon.classList.add("play-pause-icon");
+pauseIcon.src = "images/pause.png";
+pauseIcon.alt = "pause icon";
 pauseButton.classList.add("play-pause-button");
+pauseButton.appendChild(pauseIcon);
 animationControls.appendChild(pauseButton);
 pauseButton.addEventListener("click", () => {
+    pauseIcon.src = settings.paused ? "images/pause.png" : "images/triangle.png";
     settings.paused = !settings.paused;
 });
 
@@ -313,8 +325,10 @@ speedInput.setAttribute("id", "speed-control");
 speedControl.appendChild(speedInput);
 animationControls.appendChild(speedControl);
 speedInput.addEventListener("input", (e) => {
-    settings.speed = e.target.valueAsNumber;
+    const value = e.target.valueAsNumber;
+    settings.speed = (isNaN(value))? settings.speed : value ;
 });
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon };
+
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon, createNumberInput };
 

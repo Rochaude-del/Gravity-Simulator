@@ -26,7 +26,7 @@ label {
   align-items: center;
   text-align: end;
   flex: none;
-
+  margin-left: 10px;
 }
 
 
@@ -59,7 +59,7 @@ input[type="number"] {
 }
 
 #animation-controls {
-  bottom: 0;
+  bottom: 4px;
   left: 50%;
   transform: translateX(-50%);
 
@@ -67,7 +67,7 @@ input[type="number"] {
 
 #animation-controls input {
   width: 40px;
- 
+
 }
 
 #animation-controls .play-pause-button {
@@ -95,6 +95,7 @@ input[type="number"] {
   align-content: center;
   border-bottom: 1px solid rgb(63, 63, 63);
 }
+
 .input-group:last-child {
   border-bottom: none;
 }
@@ -114,6 +115,7 @@ input[type="number"] {
   width: 200px;
   display: flex;
   border: 1px solid rgb(59, 59, 59);
+  background-color: rgba(255, 255, 255, 0.7);
 
   flex-direction: column;
 
@@ -126,7 +128,7 @@ input[type="number"] {
 
 .create-parameters {
   justify-content: end;
-  background-color: rgba(255, 255, 255, 0.7);
+
 
 }
 
@@ -155,3 +157,8 @@ button {
 
   height: 35px;
 }
+
+.play-pause-icon {
+  height: 100%;
+}
+

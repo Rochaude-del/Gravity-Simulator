@@ -215,22 +215,35 @@ class Quadtree {
         }
         else {
             if (this.tlChild && quadCollisionCheck(point, this.tlChild)) {
-                array = array.concat(this.tlChild.findColliders3(point));
+                const colliders = this.tlChild.findColliders3(point);
+                if (colliders.length > 0) {
+                    array = array.concat(colliders);
+                }
             }
             if (this.trChild && quadCollisionCheck(point, this.trChild)) {
-                array = array.concat(this.trChild.findColliders3(point));
+
+                const colliders = this.trChild.findColliders3(point);
+                if (colliders.length > 0) {
+                    array = array.concat(colliders);
+                }
             }
             if (this.brChild && quadCollisionCheck(point, this.brChild)) {
-                array = array.concat(this.brChild.findColliders3(point));
+                const colliders = this.brChild.findColliders3(point);
+                if (colliders.length > 0) {
+                    array = array.concat(colliders);
+                }
             }
             if (this.blChild && quadCollisionCheck(point, this.blChild)) {
-                array = array.concat(this.blChild.findColliders3(point));
+                const colliders = this.blChild.findColliders3(point);
+                if (colliders.length > 0) {
+                    array = array.concat(colliders);
+                }
             }
         }
         return array;
     }
 
-    findTouching(point){
+    findTouching(point) {
         let array = [];
         if (this.isLeafNode) {
             if (this.point && !this.point.delete) {
@@ -612,7 +625,7 @@ class Quadtree {
     reset(xTopR, yTopR, size) {
         this.xTopR = xTopR;
         this.yTopR = yTopR;
-        this.size = size;  
+        this.size = size;
         this.tlChild = null;
         this.trChild = null;
         this.brChild = null;

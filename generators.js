@@ -157,4 +157,4 @@ function centripitalVel( x, y, mass) {
 
 let disk = generateDisk(300000, 0, 0, 20, 2000, 1, 1, 5000);
 
-export { generateDisk, generateDiskWithVel, generateRandomAssortment, disk, centripitalVel };
+export { generateDisk, generateDiskWithVel, generateRandomAssortment, disk, centripitalVel, getRandomInt };

@@ -8,6 +8,20 @@ const pathCanvas = new InteractiveCanvas();
 const backGround = new InteractiveCanvas();
 const zeroMassCanvas = new InteractiveCanvas();
 
+//zeroMassCanvas.ctx.fillStyle = "rgba(255,255,255,0)";
+//zeroMassCanvas.ctx.globalCompositeOperation = "lighter";
+//zeroMassCanvas.ctx.fillRect(-interactiveCanvas.width / 2, -interactiveCanvas.height / 2, interactiveCanvas.width, interactiveCanvas.height);
+
+const imageData = zeroMassCanvas.ctx.getImageData(0, 0, interactiveCanvas.width, interactiveCanvas.height); //if other color needed, draw rectangle of that color then change alpha to zero
+const dataI = imageData.data;
+for (let i = 0; i < dataI.length; i += 4) {
+    dataI[i] = 255;     // Red
+    dataI[i + 1] = 255;   // Green
+    dataI[i + 2] = 255;   // Blue
+    dataI[i + 3] = 0; // Alpha (0-255)
+}
+//zeroMassCanvas.ctx.putImageData(imageData, 0, 0);
+
 interactiveCanvas.helperCanvases.push(pathCanvas);
 interactiveCanvas.helperCanvases.push(backGround);
 interactiveCanvas.helperCanvases.push(zeroMassCanvas);
@@ -46,4 +60,4 @@ function changeLockon(point) {
     interactiveCanvas.enableZoom = false;
 }
 
-export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet, lockonPoint, changeLockon };
+export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet, lockonPoint, changeLockon, imageData, dataI };

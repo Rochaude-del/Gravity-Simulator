@@ -1,7 +1,7 @@
 
 import { interactiveCanvas, quadtree2, emptyPlanet,lockonPoint,changeLockon } from "./declarations.js";
 import { settings } from "./settings.js";
-import { findLargestMassPoint } from "./script.js";
+import { findLargestMassPoint } from "./animation.js";
 import { shiftPressed } from "./UI.js";
 import { createInOrbitPlanet } from "./planetCreation.js";
 import { createInOrbitDisk } from "./diskCreation.js";
