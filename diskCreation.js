@@ -1,9 +1,9 @@
-import { data, interactiveCanvas } from "./declarations.js";
+import { data, interactiveCanvas, lockonPoint } from "./declarations.js";
 import { generateDiskWithVel } from "./generators.js";
 import { settings } from "./settings.js";
 import { createDiskMenu, ctrlPressed } from "./UI.js";
 import { Quadtree } from "./Quadtree.js";
-import { lockonPoint } from "./lockon.js";
+import { ToggleButton } from "./UIElements.js";
 
 let lowestStep = 0;
 let step = 0;
@@ -127,7 +127,7 @@ function createDisk() {
     }
 }
 
-const createDiskVisually = document.createElement("button");
+const createDiskVisually = new ToggleButton();
 createDiskVisually.textContent = "create visually";
 createDiskMenu.panel.appendChild(createDiskVisually);
 
@@ -165,13 +165,15 @@ document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
 
         settings.createDiskVisually = false;
+        createDiskVisually.classList.remove("toggle-button");
         step = lowestStep;
         substep = 0;
     }
 });
 
 
-const createInOrbitDisk = document.createElement("button");
+const createInOrbitDisk = new ToggleButton();
+createInOrbitDisk.disabled = true;
 createDiskMenu.panel.appendChild(createInOrbitDisk);
 createInOrbitDisk.textContent = "create in orbit";
 createInOrbitDisk.addEventListener("click", () => {
@@ -480,6 +482,6 @@ function animateDiskPlacement(canvas) {
 }
 
 
-export { getDiskValues, animateDiskPlacement, findFirstCheck, findNextCheck, swap };
+export { getDiskValues, animateDiskPlacement, findFirstCheck, findNextCheck, swap, createInOrbitDisk };
 
 

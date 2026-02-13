@@ -1,6 +1,6 @@
 import { data, interactiveCanvas } from "./declarations.js";
 import { settings } from "./settings.js";
-import { DropMenuButton, ExpandMenu } from "./dropdown.js";
+import { DropMenuButton, ExpandMenu, ToggleButton } from "./UIElements.js";
 
 
 
@@ -8,6 +8,19 @@ const color = settings.color;
 
 const createPlanetMenu = new ExpandMenu();
 const createDiskMenu = new ExpandMenu();
+
+const icon = document.createElement("img");
+icon.classList.add("expand-icon");
+icon.src = "images/triangle.png";
+icon.alt = "menu icon";
+icon.style.display = "flex";
+icon.style.width = "10px";
+icon.style.height = "10px";
+
+
+
+
+
 
 createPlanetMenu.setAttribute("id", "planet-menu");
 createDiskMenu.setAttribute("id", "disk-menu");
@@ -35,6 +48,7 @@ function addCheckBox(div, cssClass, cssId) {
 }
 
 const names = ["x position", "y position", "x velocity", "y velocity", "mass"];
+const values = ["0", "0", "0", "0", "100"];
 const ids = ["x-pos", "y-pos", "x-vel", "y-vel", "mass"];
 const checkIds = ["pos-check", "vel-check", "mass-check"];
 
@@ -46,12 +60,17 @@ const checkIdsDisk = ["center-mass", "pos-check", "vel-check", "min-radius", "ma
 createPlanetMenu.button.textContent = "planet creation";
 createDiskMenu.button.textContent = "disk creation";
 
+
+
 for (let i = 0; i < 2; i++) {
     const div = document.createElement("div");
     div.classList.add("input-group");
     const div2 = document.createElement("div");
     for (let j = 2 * i; j < (2 * i + 2); j++) {
-        div2.appendChild(createNumberInput(names[j], ids[j]));
+        const numInput = createNumberInput(names[j], ids[j]);
+        const input = numInput.children[0];
+        input.setAttribute("value", values[j]);
+        div2.appendChild(numInput);
     }
     div.appendChild(div2);
     const checkbox = document.createElement("input");
@@ -65,7 +84,12 @@ for (let i = 0; i < 2; i++) {
 
 const massInput = document.createElement("div");
 massInput.classList.add("input-group");
-massInput.appendChild(createNumberInput("mass", "mass"));
+const massInputs = document.createElement("div");
+const numInput = createNumberInput(names[4], ids[4]);
+const input = numInput.children[0];
+input.setAttribute("value", values[4]);
+massInputs.appendChild(numInput);
+massInput.appendChild(massInputs);
 const massCheckbox = document.createElement("input");
 massCheckbox.setAttribute("type", "checkbox");
 massCheckbox.setAttribute("id", "mass");
@@ -96,6 +120,7 @@ while (i <= names2.length) {
         const numInput2 = input2.children[0];
         numInput2.setAttribute("value", values2[i + 1]);
         const div = document.createElement("div");
+        div.classList.add("input-list");
         inputGroup.classList.add("input-group");
         div.appendChild(input1);
         div.appendChild(input2);
@@ -112,7 +137,11 @@ while (i <= names2.length) {
         const input = createNumberInput(names2[9], ids2[9]);
         const numInput = input.children[0];
         numInput.setAttribute("value", values2[i]);
-        inputGroup.append(input);
+        const div = document.createElement("div");
+        div.classList.add("input-list");
+        div.appendChild(input);
+        inputGroup.appendChild(div);
+
         createDiskMenu.panel.appendChild(inputGroup);
         i++;
     }
@@ -133,15 +162,17 @@ while (i <= names2.length) {
         input2.setAttribute("name", ids2[i]);
         input2.setAttribute("checked", "");
         label2.appendChild(input2);
+
         const inputGroup = document.createElement("div");
         inputGroup.classList.add("input-group");
         const div = document.createElement("div");
+        div.classList.add("input-list");
         div.appendChild(label);
         div.appendChild(label2);
         inputGroup.appendChild(div);
         div.setAttribute("id", "spin-direction-settings");
 
-        createDiskMenu.panel.appendChild(div);
+        createDiskMenu.panel.appendChild(inputGroup);
         i++;
 
     }
@@ -157,10 +188,15 @@ creationSettings.button.textContent = "creation menu";
 creationSettings.panel.appendChild(createPlanetMenu);
 creationSettings.panel.appendChild(createDiskMenu);
 
+createPlanetMenu.button.prepend(icon.cloneNode(true));
+createDiskMenu.button.prepend(icon.cloneNode(true));
+
+
+
 const displaySettings = new DropMenuButton();
 displaySettings.button.textContent = "display settings";
 
-const pathButton = document.createElement("button");
+const pathButton = new ToggleButton();
 pathButton.textContent = "display paths";
 
 pathButton.addEventListener("click", () => {
@@ -243,7 +279,7 @@ document.addEventListener("keyup", (e) => {
 
 
 function addSettingsButton(menu, textContent, setting) {
-    const button = document.createElement("button");
+    const button = new ToggleButton();
     button.textContent = textContent;
 
     button.addEventListener("click", () => {
@@ -262,6 +298,7 @@ animationControls.setAttribute("id", "animation-controls");
 const pauseButton = document.createElement("button");
 
 pauseButton.textContent = "pause";
+pauseButton.classList.add("play-pause-button");
 animationControls.appendChild(pauseButton);
 pauseButton.addEventListener("click", () => {
     settings.paused = !settings.paused;
@@ -279,5 +316,5 @@ speedInput.addEventListener("input", (e) => {
     settings.speed = e.target.valueAsNumber;
 });
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls };
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon };
 

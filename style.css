@@ -18,33 +18,39 @@ body {
 
 label {
 
+
   display: flex;
+  flex-direction: row;
   justify-content: end;
   padding: 2px;
+  align-items: center;
+  text-align: end;
+  flex: none;
 
 }
+
+
 
 input {
 
   margin-left: 10px;
   flex: none;
   opacity: 1;
+  align-content: end;
 }
+
 
 input[type="number"] {
   width: 70px;
+  height: fit-content;
 }
 
-.box {
-  height: 200px;
-  width: 300px;
-  padding: 10px;
-  border: 1px solid black;
-}
+
 
 .taskbar {
   opacity: 1;
-
+  border: 2px solid rgb(63, 63, 63);
+  background-color: rgba(255, 255, 255, 0.7);
   display: flex;
   width: max-content;
   flex-direction: row;
@@ -53,11 +59,22 @@ input[type="number"] {
 }
 
 #animation-controls {
- bottom: 0;
- left: 50%;
- transform: translateX(-50%);
- background-color: white;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+
 }
+
+#animation-controls input {
+  width: 40px;
+ 
+}
+
+#animation-controls .play-pause-button {
+  height: 35px;
+}
+
+
 
 .stretch-btn {
   display: block;
@@ -75,22 +92,66 @@ input[type="number"] {
   display: flex;
   flex-direction: row;
   justify-content: end;
+  align-content: center;
+  border-bottom: 1px solid rgb(63, 63, 63);
+}
+.input-group:last-child {
+  border-bottom: none;
+}
+
+.input-list {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.dropdown-menu {
+  border: 1px solid rgb(59, 59, 59);
 }
 
 .dropdown-panel {
   position: absolute;
-  width: fit-content;
+  width: 200px;
   display: flex;
+  border: 1px solid rgb(59, 59, 59);
 
   flex-direction: column;
 
 }
 
+.toggle-button {
+  background-color: rgb(167, 167, 167);
+}
+
+
 .create-parameters {
   justify-content: end;
-  background-color: white;
+  background-color: rgba(255, 255, 255, 0.7);
+
+}
+
+.expand-icon {
+  position: absolute;
+  top: 50% - height/2;
+  right: 90%;
+}
+
+.rotate-90 {
+  transform: rotate(90deg);
 }
 
 button {
+  position: relative;
+  display: flex;
   white-space: nowrap;
+  flex-direction: row;
+  justify-content: space-evenly;
+  align-items: center;
+  border: 1px solid black;
+
+}
+
+.expand-menu-button {
+
+  height: 35px;
 }

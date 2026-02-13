@@ -1,17 +1,17 @@
 
-import { interactiveCanvas, data, quadtree2, filterData, pathCanvas, backGround, zeroMassCanvas } from "./declarations.js";
+import { interactiveCanvas, data, quadtree2, filterData, pathCanvas, backGround, zeroMassCanvas, lockonPoint, changeLockon } from "./declarations.js";
 import { Quadtree } from "./Quadtree.js";
 import { FunctionCanvas } from "./functionCanvas.js";
 import { settings } from "./settings.js";
 import { taskbar, animationControls } from "./UI.js";
 import { animateDiskPlacement } from "./diskCreation.js";
 import { animatePlanetPlacement } from "./planetCreation.js";
-import { changeLockon, lockonPoint } from "./lockon.js";
+import { deleteClick} from "./lockon.js";
 import { physicsSettings } from "./physicsSettings.js";
 
 let color = settings.color;
 
-
+physicsSettings.parent = taskbar;
 
 const simulator = document.querySelector("#gravity-simulator");
 
@@ -20,6 +20,8 @@ simulator.appendChild(taskbar);
 simulator.appendChild(interactiveCanvas);
 
 simulator.appendChild(animationControls);
+
+interactiveCanvas.addEventListener("click", deleteClick);
 
 
 

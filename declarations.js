@@ -36,6 +36,14 @@ function emptyPlanet() {
     };
 }
 
+let lockonPoint = emptyPlanet();
 
 
-export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet};
+function changeLockon(point) {
+    lockonPoint = point;
+    settings.lockedon = true;
+    interactiveCanvas.enableMove = false;
+    interactiveCanvas.enableZoom = false;
+}
+
+export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet, lockonPoint, changeLockon };

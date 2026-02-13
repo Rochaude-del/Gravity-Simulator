@@ -1,12 +1,14 @@
 
-import { interactiveCanvas, quadtree2, emptyPlanet } from "./declarations.js";
+import { interactiveCanvas, quadtree2, emptyPlanet,lockonPoint,changeLockon } from "./declarations.js";
 import { settings } from "./settings.js";
 import { findLargestMassPoint } from "./script.js";
 import { shiftPressed } from "./UI.js";
+import { createInOrbitPlanet } from "./planetCreation.js";
+import { createInOrbitDisk } from "./diskCreation.js";
 
 
 
-let lockonPoint = emptyPlanet();
+
 
 
 
@@ -23,12 +25,7 @@ function findChosenPlanet(quad, x, y) {
 
 }
 
-function changeLockon(point) {
-    lockonPoint = point;
-    settings.lockedon = true;
-    interactiveCanvas.enableMove = false;
-    interactiveCanvas.enableZoom = false;
-}
+
 
 interactiveCanvas.addEventListener("dblclick", (e) => {
     if (!settings.createDiskVisually && !settings.createPlanetVisually) {
@@ -36,26 +33,32 @@ interactiveCanvas.addEventListener("dblclick", (e) => {
         const y = interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.mouseY);
         const chosenPlanet = findChosenPlanet(quadtree2, x, y);
         if (chosenPlanet) {
-            lockonPoint = chosenPlanet;
+            changeLockon(chosenPlanet);
             settings.lockedon = true;
+            createInOrbitDisk.disabled = false;
+            createInOrbitPlanet.disabled = false;
             interactiveCanvas.enableMove = false;
             interactiveCanvas.enableZoom = false;
         }
         else {
-            lockonPoint = emptyPlanet();
+            changeLockon(emptyPlanet());
             settings.lockedon = false;
+            createInOrbitDisk.disabled = true;
+            createInOrbitPlanet.disabled = true;
+            //settings.createInOrbitPlanet = false;
+            //settings.createInOrbitDisk = false;
             interactiveCanvas.enableMove = true;
             interactiveCanvas.enableZoom = true;
-            settings.createInOrbitPlanet = false;
-            settings.createInOrbitDisk = false;
+        
         }
-        console.log(lockonPoint);
-        console.log(settings.lockedon);
+  
     }
 });
 
-interactiveCanvas.addEventListener("click", (e) => {
 
+
+function deleteClick(){
+    
     if (shiftPressed) {
         const x = interactiveCanvas.xOfWindowToCanvas(interactiveCanvas.mouseX);
         const y = interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.mouseY);
@@ -63,17 +66,23 @@ interactiveCanvas.addEventListener("click", (e) => {
         if (chosenPlanet) {
             chosenPlanet.delete = true;
             if(chosenPlanet === lockonPoint){
-                lockonPoint = emptyPlanet();
+                changeLockon(emptyPlanet());
                 settings.lockedon = false;
                 interactiveCanvas.enableMove = true;
                 interactiveCanvas.enableZoom = true;
+                createInOrbitDisk.disabled = true;
+                createInOrbitPlanet.disabled = true;
+                createInOrbitDisk.classList.remove("toggle-button");
+                createInOrbitPlanet.classList.remove("toggle-button");
+                settings.createInOrbitPlanet = false;
+                settings.createInOrbitDisk = false;
+                
             }
         }
 
     }
 
-});
-
+}
 interactiveCanvas.addEventListener("wheel", (e) => {
     if (settings.lockedon) {
         if (e.deltaY < 0) {
@@ -109,4 +118,5 @@ interactiveCanvas.addEventListener("wheel", (e) => {
 
 });
 
-export { lockonPoint, changeLockon };
+
+export { deleteClick };

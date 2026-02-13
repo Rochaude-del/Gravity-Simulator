@@ -10,7 +10,7 @@ class DropMenuButton extends HTMLDivElement {
 
         this.style.width = "max-content";
         this.parent = null;
-        this.button = document.createElement("button");
+        this.button = new ToggleButton();
 
         this.appendChild(this.button);
         this.button.style.flex = "1";
@@ -35,6 +35,7 @@ class DropMenuButton extends HTMLDivElement {
                         if (child instanceof DropMenuButton) {
                             if (child.panel.style.display != "none") {
                                 child.panel.style.display = "none";
+                                child.button.classList.remove("toggle-button");
                             }
                         }
                     }
@@ -74,28 +75,32 @@ class DropMenuButton extends HTMLDivElement {
 customElements.define("dropdown-menu", DropMenuButton, { extends: "div" });
 
 class ExpandMenu extends HTMLDivElement {
-    constructor(){
+    constructor() {
         super();
         this.style.display = "flex";
         this.style.flex = "1";
-        this.style.width = "max-content";
+
         this.style.flexDirection = "column";
         this.button = document.createElement("button");
+        this.button.classList.add("expand-menu-button");
+
+
         this.appendChild(this.button);
         this.panel = document.createElement("div");
         this.panel.style.display = "none";
         //this.panel.style.justifyContent = "center";
         this.appendChild(this.panel);
-        
+
         this.panel.style.flexDirection = "column";
 
-        this.button.addEventListener("click",()=>{
+        this.button.addEventListener("click", () => {
             if (this.panel.style.display === "none") {
-
+                this.querySelector(".expand-menu-button .expand-icon").classList.add("rotate-90");
                 this.panel.style.display = "flex";
             }
             else {
                 this.panel.style.display = "none";
+                this.querySelector(".expand-menu-button .expand-icon").classList.remove("rotate-90");
             }
 
         });
@@ -105,10 +110,24 @@ class ExpandMenu extends HTMLDivElement {
 
 
 }
-
 customElements.define("expand-menu", ExpandMenu, { extends: "div" });
 
-export{DropMenuButton,ExpandMenu};
+class ToggleButton extends HTMLButtonElement {
+    constructor() {
+        super();
+        this.addEventListener("click", () => {
+            if (this.classList.contains("toggle-button")) {
+                this.classList.remove("toggle-button");
+            }
+            else this.classList.add("toggle-button");
+        }
+        );
+    }
+}
+customElements.define("toggle-button", ToggleButton, { extends: "button" });
+
+
+export { DropMenuButton, ExpandMenu, ToggleButton };
 
 
 

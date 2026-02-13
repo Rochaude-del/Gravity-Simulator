@@ -1,10 +1,10 @@
-import { data, interactiveCanvas } from "./declarations.js";
+import { data, interactiveCanvas,lockonPoint } from "./declarations.js";
 import { settings } from "./settings.js";
 import { createPlanetMenu, ctrlPressed, altPressed, shiftPressed } from "./UI.js";
 import { swap } from "./diskCreation.js";
 import { Quadtree } from "./Quadtree.js";
-import { lockonPoint } from "./lockon.js";
 import { centripitalVel } from "./generators.js";
+import { ToggleButton } from "./UIElements.js";
 
 let lowestStep = 0;
 let step = 0;
@@ -123,7 +123,7 @@ function createPlanet() {
     data.push(planet);
 }
 
-const createPlanetVisually = document.createElement("button");
+const createPlanetVisually = new ToggleButton();
 createPlanetVisually.textContent = "create visually";
 createPlanetMenu.panel.appendChild(createPlanetVisually);
 
@@ -167,14 +167,15 @@ for (const input of numInputs) {
 
 document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-
+        createPlanetVisually.classList.remove("toggle-button");
         settings.createPlanetVisually = false;
         step = lowestStep;
     }
 });
 
 
-const createInOrbitPlanet = document.createElement("button");
+const createInOrbitPlanet = new ToggleButton() ;
+createInOrbitPlanet.disabled = true;
 createPlanetMenu.panel.appendChild(createInOrbitPlanet);
 createInOrbitPlanet.textContent = "create in orbit";
 createInOrbitPlanet.addEventListener("click", () => {
@@ -438,4 +439,4 @@ function animatePlanetPlacement(canvas) {
     }
 }
 
-export { animatePlanetPlacement, emptyPlanet };
+export { animatePlanetPlacement, emptyPlanet, createInOrbitPlanet};
