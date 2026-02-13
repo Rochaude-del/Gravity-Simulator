@@ -46,7 +46,8 @@ interactiveCanvas.addEventListener("dblclick", (e) => {
             settings.lockedon = false;
             interactiveCanvas.enableMove = true;
             interactiveCanvas.enableZoom = true;
-            settings.createInOrbit = false;
+            settings.createInOrbitPlanet = false;
+            settings.createInOrbitDisk = false;
         }
         console.log(lockonPoint);
         console.log(settings.lockedon);

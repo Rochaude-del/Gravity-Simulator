@@ -256,5 +256,28 @@ function addSettingsButton(menu, textContent, setting) {
 
 addSettingsButton(displaySettings, "display quadtree", "drawQuadtree");
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed };
+const animationControls = document.createElement("div");
+animationControls.classList.add("taskbar");
+animationControls.setAttribute("id", "animation-controls");
+const pauseButton = document.createElement("button");
+
+pauseButton.textContent = "pause";
+animationControls.appendChild(pauseButton);
+pauseButton.addEventListener("click", () => {
+    settings.paused = !settings.paused;
+});
+
+const speedControl = document.createElement("label");
+speedControl.textContent = "simulation speed";
+const speedInput = document.createElement("input");
+speedInput.setAttribute("type", "number");
+speedInput.setAttribute("value", "1");
+speedInput.setAttribute("id", "speed-control");
+speedControl.appendChild(speedInput);
+animationControls.appendChild(speedControl);
+speedInput.addEventListener("input", (e) => {
+    settings.speed = e.target.valueAsNumber;
+});
+
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls };
 

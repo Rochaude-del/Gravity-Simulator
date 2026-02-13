@@ -52,6 +52,13 @@ input[type="number"] {
   z-index: 2;
 }
 
+#animation-controls {
+ bottom: 0;
+ left: 50%;
+ transform: translateX(-50%);
+ background-color: white;
+}
+
 .stretch-btn {
   display: block;
   /* Changes the button to a block-level element */

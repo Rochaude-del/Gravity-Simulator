@@ -36,4 +36,6 @@ function emptyPlanet() {
     };
 }
 
+
+
 export { interactiveCanvas, pathCanvas, backGround, zeroMassCanvas, data, quadtree2, filterData, emptyPlanet};

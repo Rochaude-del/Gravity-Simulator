@@ -9,7 +9,9 @@ const settings = {
     lockedon: false,
     collisions: true,
     createInOrbitPlanet: false,
-    createInOrbitDisk: false
+    createInOrbitDisk: false,
+    paused: false,
+    speed: 1
 }
 
 

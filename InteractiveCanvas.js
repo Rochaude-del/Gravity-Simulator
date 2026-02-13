@@ -184,6 +184,9 @@ class InteractiveCanvas extends FunctionCanvas {
         const xWindowDiff = this.xOfCanvasToWindow(x) - this.width / 2;
         const yWindowDiff = this.yOfCanvasToWindow(y) - this.height / 2;
         this.translateCenterUpdate(-xWindowDiff / this.scale, -yWindowDiff / this.scale);
+        for (const i of this.helperCanvases) {
+            i.translateCenterUpdate(-xWindowDiff / this.scale, -yWindowDiff / this.scale);
+        }
     }
 }
 

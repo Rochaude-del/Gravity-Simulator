@@ -3,7 +3,7 @@ import { interactiveCanvas, data, quadtree2, filterData, pathCanvas, backGround,
 import { Quadtree } from "./Quadtree.js";
 import { FunctionCanvas } from "./functionCanvas.js";
 import { settings } from "./settings.js";
-import { taskbar } from "./UI.js";
+import { taskbar, animationControls } from "./UI.js";
 import { animateDiskPlacement } from "./diskCreation.js";
 import { animatePlanetPlacement } from "./planetCreation.js";
 import { changeLockon, lockonPoint } from "./lockon.js";
@@ -18,6 +18,8 @@ const simulator = document.querySelector("#gravity-simulator");
 simulator.appendChild(taskbar);
 
 simulator.appendChild(interactiveCanvas);
+
+simulator.appendChild(animationControls);
 
 
 
@@ -242,12 +244,13 @@ function findBoundingBox(points) {
 }
 
 function leapfrogIntergrate(points) {
+    const timeStep = deltaT * settings.speed;
     for (const point of points) {
         if (!point.delete) {
-            point.xVel += point.xAccel * deltaT;
-            point.yVel += point.yAccel * deltaT;
-            point.x += point.xVel * deltaT;
-            point.y += point.yVel * deltaT;
+            point.xVel += point.xAccel * timeStep;
+            point.yVel += point.yAccel * timeStep;
+            point.x += point.xVel * timeStep;
+            point.y += point.yVel * timeStep;
             point.xAccel = 0;
             point.yAccel = 0;
         }
@@ -256,7 +259,7 @@ function leapfrogIntergrate(points) {
 
 }
 
-const deltaT = 0.01;
+
 
 
 function realStatic() {
@@ -320,31 +323,40 @@ const xInterval = interactiveCanvas.width;
 const yInterval = interactiveCanvas.height;
 let collisionOccurence = false;
 let zeroMassExists = false;
+const deltaT = 0.01;
 
 function finalDraw() {
+
 
     collisionOccurence = false;
     zeroMassExists = false;
 
+    if (!settings.paused) {
 
-    if (data.length) findBoundingBox(data);
+        if (data.length) findBoundingBox(data);
 
-    quadtree2.reset(xMin, yMin, length);
+        quadtree2.reset(xMin, yMin, length);
 
-    for (const point of data) {
-        if (point.mass != 0) {
-            quadtree2.addPoint2(point);
-        }
-        else {
-            zeroMassExists = true;
-        }
     }
 
-    if(settings.collisions) collisions4(data, quadtree2); //quadtree3 needs collisions3 or 4
+    for (const point of data) {
+       
+        if (!point.delete) {
+            if (point.mass != 0) {
+                if (!settings.paused) quadtree2.addPoint2(point);
+            }
+            else {
+                zeroMassExists = true;
+            }
+        }
 
-    //quadtree2.pruneChildren(); //only needed by original quadtree 
+    }
 
-    quadtree2.calculateCentersOfMasses(); //not needed by quadtree3 if using original addpoint
+    if (!settings.paused) {
+        if (settings.collisions) collisions4(data, quadtree2); //quadtree3 needs collisions3 or 4
+
+        quadtree2.calculateCentersOfMasses(); //not needed by quadtree3 if using original addpoint
+    }
 
     //drawCenterOfMasses(quadtree2);
 
@@ -439,16 +451,18 @@ function finalDraw() {
 
     if (settings.drawQuadtree) drawQuadtree(quadtree2, "green");
 
-    for (const point of data) {
-        if (!point.delete) {
-            quadtree2.calculateForce(point);
+    if (!settings.paused) {
+        for (const point of data) {
+            if (!point.delete) {
+                quadtree2.calculateForce(point);
+            }
+
         }
 
+        if (collisionOccurence) filterData();
+
+        leapfrogIntergrate(data);
     }
-
-    if (collisionOccurence) filterData();
-
-    leapfrogIntergrate(data);
 
     if (settings.createPlanetVisually) animatePlanetPlacement(interactiveCanvas);
     if (settings.createDiskVisually) animateDiskPlacement(interactiveCanvas);
