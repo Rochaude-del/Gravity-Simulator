@@ -45,7 +45,7 @@ for (const check of diskChecks) {
         placementX = interactiveCanvas.width / 2 + xValue.valueAsNumber * interactiveCanvas.scale; //updating placement value needed for proper display when checkmarks are checked during visual creation
         placementY = interactiveCanvas.height / 2 + yValue.valueAsNumber * interactiveCanvas.scale;
         diskToAdd = getDiskValues();
-        console.log(findFirstCheck());
+        //console.log(findFirstCheck());
     });
 }
 
@@ -78,7 +78,7 @@ function getDiskValues() {
     if (spin === 0) spin = -1;
     diskToAddReturn[10] = spin;
 
-    console.log(diskToAddReturn);
+    //console.log(diskToAddReturn);
     return diskToAddReturn;
 
 
@@ -156,7 +156,7 @@ function getDiskChecks() { //will need to change ordering to match desired visua
     }
     swap(array, 0, 1);
     swap(array, 2, 3);
-    console.log(array);
+    //console.log(array);
     return array;
 
 }

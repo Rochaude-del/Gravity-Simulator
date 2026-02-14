@@ -41,7 +41,7 @@ for (const check of planetChecks) {
         placementX = interactiveCanvas.width / 2 + xValue.valueAsNumber * interactiveCanvas.scale; //updating placement value needed for proper display when checkmarks are checked during visual creation
         placementY = interactiveCanvas.height / 2 + yValue.valueAsNumber * interactiveCanvas.scale;
         planetToAdd = getPlanetValuesWithNAN();
-        console.log(findFirstCheck());
+        //console.log(findFirstCheck());
     });
 }
 
@@ -152,7 +152,7 @@ function getPlanetChecks() { //will need to change ordering to match desired vis
     if (settings.createInOrbitPlanet) {
         array[2] = 1;
     }
-    console.log(array);
+    //console.log(array);
     return array;
 
 }
