@@ -112,16 +112,33 @@ class ExpandMenu extends HTMLDivElement {
 }
 customElements.define("expand-menu", ExpandMenu, { extends: "div" });
 
-class ToggleButton extends HTMLButtonElement {
+class ToggleButton extends HTMLButtonElement { //having the settings these buttons control be added in the constructor would make things easier so I may do that at some point
     constructor() {
         super();
-        this.addEventListener("click", () => {
-            if (this.classList.contains("toggle-button")) {
-                this.classList.remove("toggle-button");
-            }
-            else this.classList.add("toggle-button");
+        this.addEventListener("click", this.toggle);
+        this.pair = null;
+    }
+
+    toggle() {
+        if (this.classList.contains("toggle-button")) {
+            this.classList.remove("toggle-button");
         }
-        );
+        else {
+            this.classList.add("toggle-button")
+            if (this.pair) {
+                this.pair.classList.remove("toggle-button");
+            }
+        };
+    }
+
+    untoggle() {
+        this.classList.remove("toggle-button");
+    }
+
+    addPair(pair) {
+        this.pair = pair;
+        pair.pair = this;
+   
     }
 }
 customElements.define("toggle-button", ToggleButton, { extends: "button" });

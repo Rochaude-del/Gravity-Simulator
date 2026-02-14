@@ -1,3 +1,5 @@
+import { settings } from "./settings.js";
+
 function quadCollisionCheck(point, quad) {
     const m = point.size;
     return (
@@ -21,9 +23,9 @@ function circleCollisionCheck(point1, point2) {
 //thereby not requiring the calculatecentersofmasses method along with the prunechildren one
 
 //topR is acutally top left?
-class Quadtree {
+class Quadtree { 
     static G = 6.6743 * 3;
-    static theta = 0.5;
+    //static theta = 0.9; //the smaller this is, the more accurate the forces will be but the longer it will take to calculate them. 
     static cubeRootMass(mass) {
         return Math.cbrt(Math.abs(mass));
     }
@@ -396,43 +398,46 @@ class Quadtree {
         }
     }
     calculateForce(point) {
-        if (this.point != point) {
 
-            let accel;
-            const distX = point.x - this.centerOfMass.x;
-            const distY = point.y - this.centerOfMass.y;
-            const dist = Math.sqrt(distX ** 2 + distY ** 2);
-            if (this.size / dist < Quadtree.theta) {
-                accel = Quadtree.G * this.centerOfMass.mass / (dist ** 2);
+
+        let accel;
+        const distX = point.x - this.centerOfMass.x; 
+        const distY = point.y - this.centerOfMass.y;
+        
+        if (this.size / Math.abs(distX) < settings.theta || this.size / Math.abs(distY) < settings.theta) { //if the node is far enough away, treat it as a point mass
+            const distSqrd = distX ** 2 + distY ** 2;
+            const dist = Math.sqrt(distSqrd);
+            accel = Quadtree.G * this.centerOfMass.mass / (distSqrd);
+            point.xAccel += -distX / dist * accel;
+            point.yAccel += -distY / dist * accel;
+
+
+        }
+        else if (this.isLeafNode) {
+            if (this.point != point) {
+                const distSqrd = distX ** 2 + distY ** 2;
+                const dist = Math.sqrt(distSqrd);
+                accel = Quadtree.G * this.centerOfMass.mass / (distSqrd);
                 point.xAccel += -distX / dist * accel;
                 point.yAccel += -distY / dist * accel;
-
-
-            }
-            else if (this.isLeafNode) {
-                accel = Quadtree.G * this.centerOfMass.mass / (dist ** 2);
-                this.point;
-                point.xAccel += -distX / dist * accel;
-                point.yAccel += -distY / dist * accel;
-                if (accel > 200) {
-                    const z = 5;
-                }
-            }
-            else {
-                if (this.tlChild) {
-                    this.tlChild.calculateForce(point);
-                };
-                if (this.trChild) {
-                    this.trChild.calculateForce(point);
-                };
-                if (this.brChild) {
-                    this.brChild.calculateForce(point);
-                };
-                if (this.blChild) {
-                    this.blChild.calculateForce(point);
-                };
+               
             }
         }
+        else {
+            if (this.tlChild) {
+                this.tlChild.calculateForce(point);
+            };
+            if (this.trChild) {
+                this.trChild.calculateForce(point);
+            };
+            if (this.brChild) {
+                this.brChild.calculateForce(point);
+            };
+            if (this.blChild) {
+                this.blChild.calculateForce(point);
+            };
+        }
+
 
 
     }

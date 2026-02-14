@@ -157,7 +157,7 @@ function findBoundingBox(points) {
             point.delete = true;
             exceedsBounds = true;
         }
-        else {
+        else if (point.mass != 0) {
             if (point.x > xMax) {
                 xMax = point.x;
 

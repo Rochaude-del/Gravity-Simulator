@@ -22,5 +22,13 @@ deleteDistanceControl.children[0].addEventListener("input", (e) => {
     settings.distanceLimit = (isNaN(value)) ? settings.distanceLimit : value;
 });
 
+const thetaControl = createNumberInput("theta", "theta-control");
+thetaControl.children[0].setAttribute("value", settings.theta);
+physicsSettings.panel.appendChild(thetaControl);
+thetaControl.children[0].addEventListener("input", (e) => {
+    const value = e.target.valueAsNumber;
+    settings.theta = (isNaN(value)) ? settings.theta : value;
+});
+
 
 export { physicsSettings };

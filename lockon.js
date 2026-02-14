@@ -3,8 +3,8 @@ import { interactiveCanvas, quadtree2, emptyPlanet,lockonPoint,changeLockon } fr
 import { settings } from "./settings.js";
 import { findLargestMassPoint } from "./animation.js";
 import { shiftPressed } from "./UI.js";
-import { createInOrbitPlanet } from "./planetCreation.js";
-import { createInOrbitDisk } from "./diskCreation.js";
+import { createInOrbitPlanet, resetChecksArrayPlanet } from "./planetCreation.js";
+import { createInOrbitDisk, resetChecksArrayDisk } from "./diskCreation.js";
 
 
 
@@ -45,8 +45,12 @@ interactiveCanvas.addEventListener("dblclick", (e) => {
             settings.lockedon = false;
             createInOrbitDisk.disabled = true;
             createInOrbitPlanet.disabled = true;
-            //settings.createInOrbitPlanet = false;
-            //settings.createInOrbitDisk = false;
+            settings.createInOrbitPlanet = false;
+            settings.createInOrbitDisk = false;
+            createInOrbitDisk.untoggle();
+            createInOrbitPlanet.untoggle();
+            resetChecksArrayDisk();
+            resetChecksArrayPlanet();
             interactiveCanvas.enableMove = true;
             interactiveCanvas.enableZoom = true;
         

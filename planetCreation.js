@@ -1,6 +1,6 @@
-import { data, interactiveCanvas,lockonPoint } from "./declarations.js";
+import { data, interactiveCanvas, lockonPoint } from "./declarations.js";
 import { settings } from "./settings.js";
-import { createPlanetMenu, ctrlPressed, altPressed, shiftPressed } from "./UI.js";
+import { createPlanetMenu, ctrlPressed, altPressed, shiftPressed, createPlanetVisually } from "./UI.js";
 import { swap } from "./diskCreation.js";
 import { Quadtree } from "./Quadtree.js";
 import { centripitalVel } from "./generators.js";
@@ -12,6 +12,13 @@ let placementX;
 let placementY;
 const color = settings.color;
 let checksArrayPlanet = getPlanetChecks();
+
+function resetChecksArrayPlanet() {
+    checksArrayPlanet = getPlanetChecks();
+    lowestStep = findFirstCheck();
+    step = lowestStep;
+    planetToAdd = getPlanetValuesWithNAN();
+}
 
 
 function findFirstCheck() {
@@ -36,11 +43,9 @@ for (const check of planetChecks) {
         checksArrayPlanet = getPlanetChecks();
         lowestStep = findFirstCheck();
         step = lowestStep;
-        const xValue = document.querySelector("#planet-menu #x-pos");
-        const yValue = document.querySelector("#planet-menu #y-pos");
-        placementX = interactiveCanvas.width / 2 + xValue.valueAsNumber * interactiveCanvas.scale; //updating placement value needed for proper display when checkmarks are checked during visual creation
-        placementY = interactiveCanvas.height / 2 + yValue.valueAsNumber * interactiveCanvas.scale;
+        resetPlacement();                              //updating placement value needed for proper display when checkmarks are checked during visual creation 
         planetToAdd = getPlanetValuesWithNAN();
+
         //console.log(findFirstCheck());
     });
 }
@@ -101,8 +106,8 @@ function getPlanetValuesWithNAN() {
 const createPlanetButton = document.createElement("button");
 createPlanetButton.textContent = "create planet";
 createPlanetButton.setAttribute("id", "create-planet");
-createPlanetMenu.panel.appendChild(createPlanetButton);
-createPlanetButton.addEventListener("click", createPlanet);
+createPlanetMenu.panel.prepend(createPlanetButton);
+createPlanetButton.addEventListener("click", createVisually);
 
 function createPlanet() {
     const planetToAdd = getPlanetValues();
@@ -123,13 +128,14 @@ function createPlanet() {
     data.push(planet);
 }
 
-const createPlanetVisually = new ToggleButton();
-createPlanetVisually.textContent = "create visually";
-createPlanetMenu.panel.appendChild(createPlanetVisually);
+
 
 createPlanetVisually.addEventListener("click", () => {
+    if (!settings.createPlanetVisually) {
+        resetPlacement();
+    }
     settings.createPlanetVisually = !settings.createPlanetVisually;
-    settings.createDiskVisually = false;
+    settings.createDiskVisually = false; //sets other to false to prevent confusion, can only have one visual creation mode on at once
     checksArrayPlanet = getPlanetChecks();
     if (settings.createInOrbitPlanet) {
         checksArrayPlanet[2] = 1;
@@ -174,7 +180,7 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-const createInOrbitPlanet = new ToggleButton() ;
+const createInOrbitPlanet = new ToggleButton();
 createInOrbitPlanet.disabled = true;
 createPlanetMenu.panel.appendChild(createInOrbitPlanet);
 createInOrbitPlanet.textContent = "create in orbit";
@@ -198,6 +204,22 @@ createInOrbitPlanet.addEventListener("click", () => {
     }
 });
 
+function resetPlacement() {
+    if (!settings.lockedon) {
+        placementX = interactiveCanvas.xOfCanvasToWindow(planetToAdd[0]);
+        placementY = interactiveCanvas.yOfCanvasToWindow(planetToAdd[1]);
+    }
+    else {
+        placementX = interactiveCanvas.width / 2 + planetToAdd[0] * interactiveCanvas.scale;
+        placementY = interactiveCanvas.height / 2 + planetToAdd[1] * interactiveCanvas.scale;
+        if (settings.createInOrbitPlanet) {
+            const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+            planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
+            planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+        }
+    }
+}
+
 let planetToAdd = Array(11).fill(0);
 let substep = 0;
 interactiveCanvas.addEventListener("click", (e) => {
@@ -207,23 +229,13 @@ interactiveCanvas.addEventListener("click", (e) => {
             if (isNaNInputsNeeded()) {
                 return;
             }
-            if (settings.createInOrbitPlanet) { //unneccessary?
-                const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
-                planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
-                planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+            if (settings.createInOrbitPlanet && checksArrayPlanet[0]) {
+                if (!altPressed) {
+                    planetToAdd[2] *= -1;
+                    planetToAdd[3] *= -1;
+                }
             }
-        }
 
-
-        if (checksArrayPlanet[0]) {
-            if (isNaN(planetToAdd[1]) || isNaN(planetToAdd[2])) { return };
-            placementX = interactiveCanvas.width / 2 + planetToAdd[0] * interactiveCanvas.scale;
-            placementY = interactiveCanvas.height / 2 + planetToAdd[1] * interactiveCanvas.scale;
-            if (settings.createInOrbitPlanet) {
-                const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
-                planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
-                planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
-            }
         }
 
         if (step === 0) {
@@ -235,14 +247,23 @@ interactiveCanvas.addEventListener("click", (e) => {
 
                 placementX = interactiveCanvas.tempX;
                 placementY = interactiveCanvas.tempY;
-                planetToAdd[0] = (placementX - interactiveCanvas.width / 2) / interactiveCanvas.scale;
-                planetToAdd[1] = (placementY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
-                interactiveCanvas.enableMove = false;
-                interactiveCanvas.enableZoom = false;
-                if (settings.createInOrbitPlanet) {
-                    const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
-                    planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
-                    planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+
+                if (!settings.lockedon) {
+                    planetToAdd[0] = interactiveCanvas.xOfWindowToCanvas(placementX);
+                    planetToAdd[1] = interactiveCanvas.yOfWindowToCanvas(placementY);
+                    interactiveCanvas.enableMove = false;
+                    interactiveCanvas.enableZoom = false;
+                }
+                else {
+                    planetToAdd[0] = (placementX - interactiveCanvas.width / 2) / interactiveCanvas.scale;
+                    planetToAdd[1] = (placementY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
+                    interactiveCanvas.enableMove = false;
+                    interactiveCanvas.enableZoom = false;
+                    if (settings.createInOrbitPlanet) {
+                        const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+                        planetToAdd[2] = (altPressed) ? velArray[0] : -velArray[0];
+                        planetToAdd[3] = (altPressed) ? velArray[1] : -velArray[1];
+                    }
                 }
             }
         }
@@ -323,10 +344,16 @@ function isNaNInputsNeeded() {
 
 function createVisually() {   //same as normal create?
     if (!planetToAdd) return;
-    const xShift = (settings.lockedon) ? lockonPoint.x : interactiveCanvas.xOfWindowToCanvas(interactiveCanvas.width / 2);
-    const yShift = (settings.lockedon) ? lockonPoint.y : interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.height / 2);
+    const xShift = (settings.lockedon) ? lockonPoint.x : 0;
+    const yShift = (settings.lockedon) ? lockonPoint.y : 0;
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
+
+    if (!settings.createPlanetVisually) {
+        const planet = getPlanetValues();
+        if (!planet) return;
+        planetToAdd = planet;
+    }
 
     let planet = {
         x: planetToAdd[0] + xShift,
@@ -361,8 +388,8 @@ interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing pla
 
 
 function animatePlanetPlacement(canvas) {
-    const xShift = (settings.lockedon) ? lockonPoint.x : canvas.xOfWindowToCanvas(canvas.width / 2);
-    const yShift = (settings.lockedon) ? lockonPoint.y : canvas.yOfWindowToCanvas(canvas.height / 2);
+    const xShift = (settings.lockedon) ? lockonPoint.x : 0;
+    const yShift = (settings.lockedon) ? lockonPoint.y : 0;
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
     const mouseX = canvas.mouseX;
@@ -439,4 +466,4 @@ function animatePlanetPlacement(canvas) {
     }
 }
 
-export { animatePlanetPlacement, emptyPlanet, createInOrbitPlanet};
+export { animatePlanetPlacement, emptyPlanet, createInOrbitPlanet, resetChecksArrayPlanet };

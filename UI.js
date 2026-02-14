@@ -191,6 +191,18 @@ while (i <= names2.length) {
 
 }
 
+
+const createPlanetVisually = new ToggleButton();
+createPlanetVisually.textContent = "create visually";
+createPlanetMenu.panel.appendChild(createPlanetVisually);
+
+const createDiskVisually = new ToggleButton();
+createDiskVisually.textContent = "create visually";
+createDiskMenu.panel.appendChild(createDiskVisually);
+
+createDiskVisually.addPair(createPlanetVisually);
+
+
 const creationSettings = new DropMenuButton();
 creationSettings.button.textContent = "creation menu";
 creationSettings.panel.appendChild(createPlanetMenu);
@@ -330,5 +342,5 @@ speedInput.addEventListener("input", (e) => {
 });
 
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon, createNumberInput };
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon, createNumberInput, createDiskVisually, createPlanetVisually };
 

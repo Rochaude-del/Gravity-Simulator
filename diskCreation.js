@@ -1,7 +1,7 @@
 import { data, interactiveCanvas, lockonPoint } from "./declarations.js";
 import { generateDiskWithVel } from "./generators.js";
 import { settings } from "./settings.js";
-import { createDiskMenu, ctrlPressed } from "./UI.js";
+import { createDiskMenu, ctrlPressed, createDiskVisually } from "./UI.js";
 import { Quadtree } from "./Quadtree.js";
 import { ToggleButton } from "./UIElements.js";
 
@@ -11,6 +11,13 @@ let placementX = interactiveCanvas.width / 2;
 let placementY = interactiveCanvas.height / 2;
 const color = settings.color;
 let checksArrayDisk = getDiskChecks();
+
+function resetChecksArrayDisk() {
+    checksArrayDisk = getDiskChecks();
+    lowestStep = findFirstCheck();
+    step = lowestStep;
+    diskToAdd = getDiskValuesWithNAN();
+}
 
 function findFirstCheck() {
 
@@ -40,10 +47,9 @@ for (const check of diskChecks) {
         checksArrayDisk = getDiskChecks();
         lowestStep = findFirstCheck();
         step = lowestStep;
-        const xValue = document.querySelector("#disk-menu #x-pos");
-        const yValue = document.querySelector("#disk-menu #y-pos");
-        placementX = interactiveCanvas.width / 2 + xValue.valueAsNumber * interactiveCanvas.scale; //updating placement value needed for proper display when checkmarks are checked during visual creation
-        placementY = interactiveCanvas.height / 2 + yValue.valueAsNumber * interactiveCanvas.scale;
+
+        resetPlacement();
+
         diskToAdd = getDiskValues();
         //console.log(findFirstCheck());
     });
@@ -115,8 +121,8 @@ function getDiskValuesWithNAN() {
 const createDiskButton = document.createElement("button");
 createDiskButton.textContent = "create disk";
 createDiskButton.setAttribute("id", "create-disk");
-createDiskMenu.panel.appendChild(createDiskButton);
-createDiskButton.addEventListener("click", createDisk);
+createDiskMenu.panel.prepend(createDiskButton);
+createDiskButton.addEventListener("click", createVisually);
 
 function createDisk() {
     const diskToAdd = getDiskValues();
@@ -127,15 +133,17 @@ function createDisk() {
     }
 }
 
-const createDiskVisually = new ToggleButton();
-createDiskVisually.textContent = "create visually";
-createDiskMenu.panel.appendChild(createDiskVisually);
+
 
 
 
 createDiskVisually.addEventListener("click", () => {
+    if (!settings.createDiskVisually) {
+        resetPlacement();
+    }
     settings.createDiskVisually = !settings.createDiskVisually;
-    settings.createPlanetVisually = false;
+    settings.createPlanetVisually = false; //sets other to false to prevent confusion, can only have one visual creation mode on at once
+
     checksArrayDisk = getDiskChecks();
     if (settings.createInOrbitDisk) {
         checksArrayDisk[0] = checksArrayDisk[1] = checksArrayDisk[3] = 1;
@@ -179,6 +187,7 @@ createInOrbitDisk.textContent = "create in orbit";
 createInOrbitDisk.addEventListener("click", () => {
     if (settings.lockedon) {
         if (!settings.createInOrbitDisk) {
+            resetPlacement();
             settings.createInOrbitDisk = !settings.createInOrbitDisk;
             checksArrayDisk[0] = checksArrayDisk[1] = checksArrayDisk[3] = 1;
             lowestStep = findFirstCheck();
@@ -204,6 +213,19 @@ for (const input of numInputs) {
     });
 }
 
+
+function resetPlacement() {
+    if (!settings.lockedon) {
+        placementX = interactiveCanvas.xOfCanvasToWindow(diskToAdd[1]);
+        placementY = interactiveCanvas.yOfCanvasToWindow(diskToAdd[2]);
+    }
+    else {
+        placementX = interactiveCanvas.width / 2 + diskToAdd[1] * interactiveCanvas.scale;
+        placementY = interactiveCanvas.height / 2 + diskToAdd[2] * interactiveCanvas.scale;
+
+    }
+}
+
 let diskToAdd = Array(11).fill(0);
 let substep = 0;
 interactiveCanvas.addEventListener("click", (e) => {
@@ -218,14 +240,6 @@ interactiveCanvas.addEventListener("click", (e) => {
 
         }
 
-
-        if (checksArrayDisk[0]) {
-            if (isNaN(diskToAdd[1]) || isNaN(diskToAdd[2])) { return };
-            placementX = interactiveCanvas.width / 2 + diskToAdd[1] * interactiveCanvas.scale;
-            placementY = interactiveCanvas.height / 2 + diskToAdd[2] * interactiveCanvas.scale;
-
-        }
-
         if (step === 0) {
             if (ctrlPressed) {
                 return;
@@ -233,12 +247,23 @@ interactiveCanvas.addEventListener("click", (e) => {
 
             else {
 
+
                 placementX = interactiveCanvas.tempX;
                 placementY = interactiveCanvas.tempY;
+                /*
                 diskToAdd[1] = (placementX - interactiveCanvas.width / 2) / interactiveCanvas.scale;
                 diskToAdd[2] = (placementY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
                 interactiveCanvas.enableMove = false;
                 interactiveCanvas.enableZoom = false;
+                */
+                if (!settings.lockedon) {
+                    diskToAdd[1] = interactiveCanvas.xOfWindowToCanvas(placementX);
+                    diskToAdd[2] = interactiveCanvas.yOfWindowToCanvas(placementY);
+                }
+                else {
+                    diskToAdd[1] = (placementX - interactiveCanvas.width / 2) / interactiveCanvas.scale;
+                    diskToAdd[2] = (placementY - interactiveCanvas.height / 2) / interactiveCanvas.scale;
+                }
             }
         }
 
@@ -337,11 +362,16 @@ function isNaNInputsNeeded() {
 }
 
 function createVisually() {
-
-    const xShift = (settings.lockedon) ? lockonPoint.x : interactiveCanvas.xOfWindowToCanvas(interactiveCanvas.width / 2);
-    const yShift = (settings.lockedon) ? lockonPoint.y : interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.height / 2);
+    const xShift = (settings.lockedon) ? lockonPoint.x : 0;
+    const yShift = (settings.lockedon) ? lockonPoint.y : 0;
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
+    if (!settings.createDiskVisually) {
+        const disk = getDiskValues();
+        if (!disk) return;
+        diskToAdd = disk;
+    }
+
     diskToAdd[1] += xShift;
     diskToAdd[2] += yShift;
     diskToAdd[3] += xVelShift;
@@ -381,7 +411,7 @@ function createVisually() {
 }
 */
 
-interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing planet visually
+interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing disk visually
     if (settings.createDiskVisually) {
         e.preventDefault();
         step = lowestStep;
@@ -402,8 +432,8 @@ interactiveCanvas.addEventListener("contextmenu", (e) => { //cancels placing pla
 
 function animateDiskPlacement(canvas) {
 
-    const xShift = (settings.lockedon) ? lockonPoint.x : interactiveCanvas.xOfWindowToCanvas(interactiveCanvas.width / 2);
-    const yShift = (settings.lockedon) ? lockonPoint.y : interactiveCanvas.yOfWindowToCanvas(interactiveCanvas.height / 2);
+    const xShift = (settings.lockedon) ? lockonPoint.x : 0;
+    const yShift = (settings.lockedon) ? lockonPoint.y : 0;
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
 
@@ -482,6 +512,6 @@ function animateDiskPlacement(canvas) {
 }
 
 
-export { getDiskValues, animateDiskPlacement, findFirstCheck, findNextCheck, swap, createInOrbitDisk };
+export { getDiskValues, animateDiskPlacement, findFirstCheck, findNextCheck, swap, createInOrbitDisk, resetChecksArrayDisk };
 
 
