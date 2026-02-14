@@ -1,6 +1,7 @@
 import { InteractiveCanvas } from "./InteractiveCanvas.js";
 import { Quadtree } from "./Quadtree.js";
 import { settings } from "./settings.js";
+import { generateDiskWithVel } from "./generators.js";
 
 const interactiveCanvas = new InteractiveCanvas();
 
@@ -26,7 +27,7 @@ interactiveCanvas.helperCanvases.push(pathCanvas);
 interactiveCanvas.helperCanvases.push(backGround);
 interactiveCanvas.helperCanvases.push(zeroMassCanvas);
 
-let data = [];
+let data = generateDiskWithVel(500,0,0,0,0,30,350,1,10,10,1);
 function filterData() {
     data = data.filter(function (point) {
         return (!point.delete);

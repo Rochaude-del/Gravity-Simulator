@@ -1,4 +1,4 @@
-import { FunctionCanvas } from "./functionCanvas.js";
+import { FunctionCanvas } from "./FunctionCanvas.js";
 class InteractiveCanvas extends FunctionCanvas {
 
 

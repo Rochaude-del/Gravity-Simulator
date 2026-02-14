@@ -1,7 +1,7 @@
 
 import { interactiveCanvas, data, quadtree2, filterData, pathCanvas, backGround, zeroMassCanvas, lockonPoint, changeLockon, imageData, dataI } from "./declarations.js";
 import { Quadtree } from "./Quadtree.js";
-import { FunctionCanvas } from "./functionCanvas.js";
+import { FunctionCanvas } from "./FunctionCanvas.js";
 import { settings } from "./settings.js";
 import { taskbar, animationControls } from "./UI.js";
 import { animateDiskPlacement } from "./diskCreation.js";
