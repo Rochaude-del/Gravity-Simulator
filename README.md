@@ -1,7 +1,9 @@
 # Gravity-Simulator
 N-Body gravity simulator using the Barnes Hut algorithm written in Javascript.  
 
-![GravitySim](https://github.com/user-attachments/assets/899c3493-6562-4926-ae67-813e65938dac)
+![GravitySim](https://github.com/user-attachments/assets/899c3493-6562-4926-ae67-813e65938dac)  
+
+[View Here](https://rochaude-del.github.io/Gravity-Simulator/)
 
 ## Theory and Implementation
 [The Barnes Hut algorithm](https://en.wikipedia.org/wiki/Barnes-Hut_simulation) is a method for calculating the acceleration a particle experiences from other particles where if sufficiently far from groups of these particles the acceleration is approximated by using the center of mass of the particles rather than calculating the force for each particle, growing in computational time on the order of $O(n\log(n))$ compared to the naive implentation's $O(n^2)$.
