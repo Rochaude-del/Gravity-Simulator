@@ -70,6 +70,7 @@ function getPlanetValues() {
     const children = document.querySelectorAll("#planet-menu input[type = 'number']");
     const planetToAddReturn = Array(5).fill(0);
     let i = 0;
+    
     for (const child of children) {
         const value = child.valueAsNumber;
         if (isNaN(value)) {
@@ -79,10 +80,13 @@ function getPlanetValues() {
         planetToAddReturn[i] = value;
         i++
     }
+
     if (settings.createInOrbitPlanet) {
-        planetToAddReturn[2] = 0;
-        planetToAddReturn[3] = 0;
+        const velArray = centripitalVel(planetToAdd[0], planetToAdd[1], lockonPoint.mass);
+        planetToAddReturn[2] = velArray[0];
+        planetToAddReturn[3] = velArray[1];
     }
+
     return planetToAddReturn;
 
 }
@@ -350,8 +354,11 @@ function createVisually() {   //same as normal create?
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
 
     if (!settings.createPlanetVisually) {
-        const planet = getPlanetValues();
-        if (!planet) return;
+        const planet = getPlanetValuesWithNAN();
+        planet[2] = (!altPressed)? -planet[2]: planet[2];
+        planet[3] = (!altPressed)? -planet[3]: planet[3];
+        if(isNaNInputsNeeded()) return;
+      
         planetToAdd = planet;
     }
 

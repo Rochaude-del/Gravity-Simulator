@@ -367,8 +367,9 @@ function createVisually() {
     const xVelShift = (settings.lockedon) ? lockonPoint.xVel : 0;
     const yVelShift = (settings.lockedon) ? lockonPoint.yVel : 0;
     if (!settings.createDiskVisually) {
-        const disk = getDiskValues();
-        if (!disk) return;
+        const disk = getDiskValuesWithNAN();
+        if(isNaNInputsNeeded()) return;
+        
         diskToAdd = disk;
     }
 
