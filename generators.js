@@ -89,7 +89,10 @@ function generateDiskWithVel(centerMass, xPos, yPos, centerXVel, centerYVel, min
 
     for (let i = 0; i < number; i++) {
         const radius = (maxRadius != minRadius)? randomEqualDisk3(minRadius, maxRadius): minRadius;
-        const shellMass = (maxRadius != minRadius)? number * ((maxMass + minMass) / 2) * (radius - minRadius) / (maxRadius - minRadius): number * ((maxMass + minMass) / 2); // using shell theorem to get rough total force on point including from other orbiting bodies 
+        let shellMass = (maxRadius != minRadius)? number * ((maxMass + minMass) / 2) * (radius - minRadius) / (maxRadius - minRadius): number * ((maxMass + minMass) / 2); // using shell theorem to get rough total force on point including from other orbiting bodies 
+        if(settings.diskSpiralsIn){
+            shellMass = 0;
+        }
         const theta = 2 * Math.PI * Math.random();                                                         // so disk retains shape instead of contracting in
         const x = radius * Math.cos(theta);
         const y = radius * Math.sin(theta);

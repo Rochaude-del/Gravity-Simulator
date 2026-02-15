@@ -342,5 +342,5 @@ speedInput.addEventListener("input", (e) => {
 });
 
 
-export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon, createNumberInput, createDiskVisually, createPlanetVisually };
+export { taskbar, createPlanetMenu, createDiskMenu, interactiveCanvas, ctrlPressed, shiftPressed, altPressed, animationControls, icon, createNumberInput, createDiskVisually, createPlanetVisually, addSettingsButton };
 

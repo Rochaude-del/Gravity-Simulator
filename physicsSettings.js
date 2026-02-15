@@ -1,7 +1,7 @@
 import { data, interactiveCanvas, lockonPoint } from "./declarations.js";
 import { generateDiskWithVel } from "./generators.js";
 import { settings } from "./settings.js";
-import { createDiskMenu, ctrlPressed, taskbar, icon, createNumberInput } from "./UI.js";
+import { createDiskMenu, ctrlPressed, taskbar, icon, createNumberInput, addSettingsButton } from "./UI.js";
 import { Quadtree } from "./Quadtree.js";
 import { DropMenuButton, ExpandMenu, ToggleButton } from "./UIElements.js";
 
@@ -29,6 +29,8 @@ thetaControl.children[0].addEventListener("input", (e) => {
     const value = e.target.valueAsNumber;
     settings.theta = (isNaN(value)) ? settings.theta : value;
 });
+
+addSettingsButton(physicsSettings, "disk spirals in", "diskSpiralsIn")
 
 
 export { physicsSettings };
