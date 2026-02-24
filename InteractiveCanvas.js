@@ -22,6 +22,10 @@ class InteractiveCanvas extends FunctionCanvas {
         this.scale = 1;
         this.enableZoom = true;
         this.enableMove = true;
+        this.fpsCounter = document.createElement("div");
+        this.fpsCounter.setAttribute("id", "fps-counter");
+        this.frames = 0;
+        this.lastTime = performance.now();
         this.addEventListener("mousemove", (e) => {
             this.mouseX = e.clientX - this.offsetLeft;
             this.mouseY = e.clientY - this.offsetTop;
@@ -158,6 +162,15 @@ class InteractiveCanvas extends FunctionCanvas {
     }
 
     animate() {
+        let currentTime = performance.now();
+        this.frames++;
+        const elapsed = currentTime - this.lastTime;
+
+        if (elapsed >= 1000) { // Update the FPS counter every second
+            this.fpsCounter.textContent = `FPS: ${this.frames}`;
+            this.frames = 0;
+            this.lastTime = currentTime;
+        }
         this.fullClear();
         this.drawFunction();
         requestAnimationFrame(this.animate.bind(this));

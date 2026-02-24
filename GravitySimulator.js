@@ -9,6 +9,7 @@ class GravitySimulator {
         this.div.appendChild(taskbar);
         this.div.appendChild(interactiveCanvas);
         this.div.appendChild(animationControls);
+        this.div.appendChild(interactiveCanvas.fpsCounter);
     }
 
     start() {
